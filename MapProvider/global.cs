@@ -4,4 +4,10 @@ global using System.Globalization;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;
 global using System.IO;
-
+global using System.IO.Compression;
+global using System.Net.WebSockets;
+global using System.Text;
+global using Dapper;
+global using Npgsql;
+global using MapProvider.Utils;
+global using DotNetEnv;

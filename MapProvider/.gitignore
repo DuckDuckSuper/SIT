@@ -1,0 +1,59 @@
+# Visual Studio / .NET
+.vs/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+bin/
+obj/
+Debug/
+Release/
+publish/
+*.exe
+*.dll
+*.pdb
+
+# Rider / JetBrains
+.idea/
+*.iml
+
+# NuGet
+*.nupkg
+packages/
+
+# Visual Studio Code
+.vscode/
+
+# Environment / secrets
+.env
+.env.*
+.secret
+.secrets
+.env.local
+
+# Logs
+*.log
+logs/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Misc
+*.db
+*.sqlite
+*.db-journal
+*.generated.cs
+*.g.cs
+
+# Ignore user-specific files
+*.userprefs
+
+# Coverage
+coverage/
+*.lcov
+
+# IDE metadata
+/.vs/*
+/.idea/*
