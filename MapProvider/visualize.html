@@ -1,98 +1,100 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <title>OpenSeaMap Grid Visualization</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <style>
-    #map { height: 100vh; width: 100%; }
-  </style>
-</head>
-<body>
-<div id="map"></div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // Initialize map centered on Singapore
-  const map = L.map('map').setView([1.3521, 103.8198], 11);
-
-  // OpenSeaMap layer
-  L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
-    attribution: 'Map data © OpenSeaMap contributors',
-    maxZoom: 18
-  }).addTo(map);
-
-  // Base map for land
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
-
-  // Load GeoJSON Singapore polygons
-  fetch('singapore.geojson')
-    .then(res => res.json())
-    .then(geojsonData => {
-      L.geoJSON(geojsonData, {
-        style: {
-          color: 'green',
-          weight: 2,
-          fillOpacity: 0.1
-        }
-      }).addTo(map);
-    });
-
-  // Load grid data
-  fetch('grids.json')
-    .then(res => res.json())
-    .then(grids => {
-
-      console.log("Grid JSON data:", grids); 
-      const layerGroup = L.layerGroup().addTo(map);
-      const batchSize = 200; // number of circles per animation frame
-      let index = 0;
-
-      function drawBatch() {
-        const end = Math.min(index + batchSize, grids.length);
-        for (let i = index; i < end; i++) {
-          const cell = grids[i];
-          if (!cell || !cell.Position) continue;
-
-          const lat = cell.Position.Latitude;
-          const lon = cell.Position.Longitude;
-
-          const radiusMeters = (cell.CellSize || 0.002) * 111320;
-          const isValid = cell.Valid ; 
-          const color = isValid ? 'blue' : 'red';
-
-          const circle = L.circle([lat, lon], {
-            radius: radiusMeters,
-            color: color,
-            weight: 1,
-            fillOpacity: 0.2
-          });
-
-          circle.bindTooltip(
-    `ID: ${cell.Id}<br>Row: ${cell.Row}<br>Col: ${cell.Column}<br>Valid: ${isValid}`,
-    { permanent: false, direction: 'top' }
-);
-
-          circle.addTo(layerGroup);
-        }
-
-        index = end;
-        if (index < grids.length) {
-          requestAnimationFrame(drawBatch);
-        }
+  <head>
+    <meta charset="utf-8" />
+    <title>OpenSeaMap Grid Visualization</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+      #map {
+        height: 100vh;
+        width: 100%;
       }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
 
-      drawBatch(); // start drawing
-    });
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+      // Initialize map centered on Singapore
+      const map = L.map("map").setView([1.3521, 103.8198], 11);
 
-  // Optional: draw route line between origin and destination
-  const route = [
-    [1.2700, 103.8667], // origin
-    [1.2456, 103.9700]  // destination
-  ];
-  L.polyline(route, { color: 'red', weight: 3 }).addTo(map);
-</script>
-</body>
+      // OpenSeaMap layer
+      L.tileLayer("https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png", {
+        attribution: "Map data © OpenSeaMap contributors",
+        maxZoom: 18,
+      }).addTo(map);
+
+      // Base map for land
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
+
+      // Load GeoJSON Singapore polygons
+      fetch("singapore.geojson")
+        .then((res) => res.json())
+        .then((geojsonData) => {
+          L.geoJSON(geojsonData, {
+            style: {
+              color: "green",
+              weight: 2,
+              fillOpacity: 0.1,
+            },
+          }).addTo(map);
+        });
+
+      // Load grid data
+      fetch("grids.json")
+        .then((res) => res.json())
+        .then((grids) => {
+          console.log("Grid JSON data:", grids);
+          const layerGroup = L.layerGroup().addTo(map);
+          const batchSize = 200; // number of circles per animation frame
+          let index = 0;
+
+          function drawBatch() {
+            const end = Math.min(index + batchSize, grids.length);
+            for (let i = index; i < end; i++) {
+              const cell = grids[i];
+              if (!cell || !cell.Position) continue;
+
+              const lat = cell.Position.Latitude;
+              const lon = cell.Position.Longitude;
+
+              const radiusMeters = (cell.CellSize || 0.002) * 111320;
+              const isValid = cell.Valid;
+              const color = isValid ? "blue" : "red";
+
+              const circle = L.circle([lat, lon], {
+                radius: radiusMeters,
+                color: color,
+                weight: 1,
+                fillOpacity: 0.2,
+              });
+
+              circle.bindTooltip(`ID: ${cell.Id}<br>Row: ${cell.Row}<br>Col: ${cell.Column}<br>Valid: ${isValid}`, {
+                permanent: false,
+                direction: "top",
+              });
+
+              circle.addTo(layerGroup);
+            }
+
+            index = end;
+            if (index < grids.length) {
+              requestAnimationFrame(drawBatch);
+            }
+          }
+
+          drawBatch(); // start drawing
+        });
+
+      // Optional: draw route line between origin and destination
+      const route = [
+        [1.27, 103.8667], // origin
+        [1.2456, 103.97], // destination
+      ];
+      L.polyline(route, { color: "red", weight: 3 }).addTo(map);
+    </script>
+  </body>
 </html>

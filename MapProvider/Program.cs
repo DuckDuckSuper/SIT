@@ -1,4 +1,8 @@
-﻿// Convert DMS to decimal
+﻿// Load Environment Variables
+Env.Load();
+
+
+// Convert DMS to decimal
         double originLatitude = CoordinateConverter.ConvertDmsToDecimal("N 1°16'12\"");
         double originLongitude = CoordinateConverter.ConvertDmsToDecimal("E103°52'00\"");
         double destinationLatitude = CoordinateConverter.ConvertDmsToDecimal("N 1°14'44\"");
@@ -45,3 +49,14 @@
         File.WriteAllText("grids.json", json);
         Console.WriteLine("Exported grid data to grids.json");
         Console.WriteLine($"Generated {grids.Count} grid cells in ROI.");
+
+        var apiUrl = Environment.GetEnvironmentVariable("AIS_URL");
+        var apiKey = Environment.GetEnvironmentVariable("AIS_KEY");
+        
+        Console.WriteLine("Starting Vessel Collector...");
+        Console.WriteLine($"Connecting to AISStream at {apiUrl}...");
+
+        var vesselCollector = new VesselCollector(apiUrl, apiKey);
+        await vesselCollector.ReceiveAisMessagesAsync();
+        // This line will execute only if the WebSocket connection closes
+        Console.WriteLine("AISStream connection closed.");
